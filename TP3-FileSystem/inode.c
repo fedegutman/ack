@@ -8,7 +8,7 @@
  * TODO
  */
 int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inp) {
-  int inumber = inumber - 1; // la indexacion arranca en 1
+  inumber = inumber - 1; // la indexacion arranca en 1
   int inodes_per_sector = DISKIMG_SECTOR_SIZE / sizeof(struct inode); // cantidad de inodes por sector
 
   int sector = inumber / inodes_per_sector; // me devuelve el sector donde esta el inode
