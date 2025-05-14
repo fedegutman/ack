@@ -15,30 +15,30 @@ int file_getblock(struct unixfilesystem *fs, int inumber, int blockNum, void *bu
     }
 
     struct inode inode;
-    if (inode_iget(fs, inumber, &inode) < 0) {
+    if (inode_iget(fs, inumber, &inode) < 0) { // obtengo el inode
         return -1;
     }
 
-    if ((inode.i_mode & IALLOC) == 0) {
+    if ((inode.i_mode & IALLOC) == 0) { // me fijo si el inode esta libre
         return -1;
     }
 
-    int file_size = inode_getsize(&inode);
+    int file_size = inode_getsize(&inode); // obtengo el tamaño del archivo
     if (file_size <= 0) {
         return 0;
     }
 
-    int total_blocks = (file_size + DISKIMG_SECTOR_SIZE - 1) / DISKIMG_SECTOR_SIZE;
+    int total_blocks = (file_size + DISKIMG_SECTOR_SIZE - 1) / DISKIMG_SECTOR_SIZE; // calculo la cantidad de bloques
     if (blockNum >= total_blocks) {
         return -1;
-    }
+    } 
 
-    int sector = inode_indexlookup(fs, &inode, blockNum);
+    int sector = inode_indexlookup(fs, &inode, blockNum); // obtengo el bloque correspondiente
     if (sector < 0) {
         return -1;
     }
 
-    if (sector == 0) {
+    if (sector == 0) { // si el bloque es 0, significa que no hay datos
         memset(buf, 0, DISKIMG_SECTOR_SIZE);
     } else {
         int read_bytes = diskimg_readsector(fs->dfd, sector, buf);
@@ -47,9 +47,12 @@ int file_getblock(struct unixfilesystem *fs, int inumber, int blockNum, void *bu
         }
     }
 
+    // calculo la cantidad de bytes validos en el bloque
     int offset = blockNum * DISKIMG_SECTOR_SIZE;
     int remaining = file_size - offset;
 
-    return (remaining > DISKIMG_SECTOR_SIZE) ? DISKIMG_SECTOR_SIZE : remaining;
+    if (remaining > DISKIMG_SECTOR_SIZE) {
+        return DISKIMG_SECTOR_SIZE;
+    return remaining;
+    }
 }
-

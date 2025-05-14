@@ -8,7 +8,7 @@
  * TODO
  */
 int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inp) {
-  if (inumber < 0 || inp == NULL) {
+  if (inumber <= 0 || inp == NULL) {
     return -1;
   }
 
@@ -44,11 +44,10 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
 
   // caso 1: el archivo es chico por ende el inode apunta directamente a los bloques de datos
   if (blockNum < 0 || inp == NULL) {
-    return -1; // error
+    return -1;
   }
   int fd = fs->dfd;
-	int adressing = ((inp->i_mode & ILARG) == 0); // chequeo si el inode usa direct addressing CHEQUEAR
-
+	int adressing = ((inp->i_mode & ILARG) == 0); // chequeo si el inode usa direct addressing
 	if (adressing) {
 		return inp->i_addr[blockNum]; // devuelvo el bloque de datos
 	}
@@ -57,7 +56,7 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
 
 	int n_addresses = DISKIMG_SECTOR_SIZE / sizeof(uint16_t); // cantidad de direcciones que puede tener un bloque
 	int singly_indirect_blocks = n_addresses * 7; // obtengo la cantidad de bloques indirectos que puede tener el inode
-                                    // 7 porque el inode tiene 8 bloques de datos y uno de ellos es el bloque de indireccionamiento CHEQUEAR
+                                    // 7 porque el inode tiene 7 bloques singly indirect y 1 bloque doubly indirect
 
 	if (blockNum < singly_indirect_blocks) { // caso 2: el bloque se encuentra en un bloque singly indirect
 		int ind_block = blockNum / n_addresses; // obtengo el bloque de indireccionamiento
@@ -68,11 +67,10 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
 		if (err < 0) {
       return -1;	
     }
-
 		return addrs[ind_block_index];
+  }
 
-	} else { // caso 3: el bloque se encuentra en un bloque doubly indirect. tengo que leer un bloque y despues el otro.
-
+    // caso 3: el bloque se encuentra en un bloque doubly indirect. tengo que leer un bloque y despues el otro.
 		// entro primero a un bloque y despues al segundo
 		int nblock = blockNum - singly_indirect_blocks;
 		int double_ind_block_index1 = nblock / n_addresses;
@@ -92,7 +90,6 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
 
 		return addresses2[double_ind_block_index2];
 	}	
-}
 
 int inode_getsize(struct inode *inp) {
   return ((inp->i_size0 << 16) | inp->i_size1); 
