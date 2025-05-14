@@ -43,7 +43,7 @@ int directory_findname(struct unixfilesystem *fs, const char *name,
       // comparo el nombre de la entrada con el nombre que busco
       if (strncmp(entry[j].d_name, name, sizeof(entry[j].d_name)) == 0) {
           *dirEnt = entry[j];
-          return -1;
+          return 0;
       }
     }
   }
