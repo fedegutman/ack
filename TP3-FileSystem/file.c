@@ -53,6 +53,6 @@ int file_getblock(struct unixfilesystem *fs, int inumber, int blockNum, void *bu
 
     if (remaining > DISKIMG_SECTOR_SIZE) {
         return DISKIMG_SECTOR_SIZE;
-    return remaining;
     }
+    return remaining;
 }
