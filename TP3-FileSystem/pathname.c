@@ -15,7 +15,7 @@ int pathname_lookup(struct unixfilesystem *fs, const char *pathname) {
         return -1;
     }
 
-    int dirinumber = 1; // inicio en el directorio raíz
+    int directory = 1; // inicio en el directorio raíz
 
     char path_copy[strlen(pathname) + 1]; // me armo una copia del pathname
     strcpy(path_copy, pathname);
@@ -24,15 +24,15 @@ int pathname_lookup(struct unixfilesystem *fs, const char *pathname) {
     while (token != NULL) { // recorro toda la ruta
         struct direntv6 dirEnt;
 
-        int res = directory_findname(fs, token, dirinumber, &dirEnt); // busco el nombre en el directorio
+        int res = directory_findname(fs, token, directory, &dirEnt); // busco el nombre en el directorio
         if (res < 0) {
             return -1;
         }
 
-        dirinumber = dirEnt.d_inumber; // paso al siguiente directorio
+        directory = dirEnt.d_inumber; // paso al siguiente directorio
 
         token = strtok(NULL, "/");
     }
-    
-    return dirinumber;
+
+    return directory;
 }

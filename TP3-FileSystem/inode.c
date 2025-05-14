@@ -64,19 +64,19 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
                                     // 7 porque el inode tiene 7 bloques singly indirect y 1 bloque doubly indirect
 
 	if (blockNum < singly_indirect_blocks) { // caso 2: el bloque se encuentra en un bloque singly indirect
-		int ind_block = blockNum / n_addresses; // obtengo el bloque de indireccionamiento
-		int ind_block_index = blockNum % n_addresses; // obtengo el indice donde se encuentra el bloque de datos
-    uint16_t *addrs = malloc(DISKIMG_SECTOR_SIZE);
-    if (addrs == NULL) {
+		int ind_block = blockNum / n_addresses;
+		int ind_block_index = blockNum % n_addresses;
+    uint16_t *address = malloc(DISKIMG_SECTOR_SIZE);
+    if (address == NULL) {
       return -1;
     }
-		int err = diskimg_readsector(fd, inp->i_addr[ind_block], addrs);
+		int err = diskimg_readsector(fd, inp->i_addr[ind_block], address);
 		if (err < 0) {
-      free(addrs);
+      free(address);
       return -1;	
     }
-    int r = addrs[ind_block_index];
-		free(addrs);
+    int r = address[ind_block_index];
+		free(address);
     return r;
   }
 
