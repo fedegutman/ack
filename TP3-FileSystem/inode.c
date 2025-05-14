@@ -90,12 +90,12 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
   }
   int block1_err = diskimg_readsector(fd, inp->i_addr[7], addresses1);
   if (block1_err < 0) {
-    free(addresses1)
+    free(addresses1);
     return -1;
   }
 
   int sector_2 = addresses1[double_ind_block_index1];
-  free(addresses1)
+  free(addresses1);
 
   int double_ind_block_index2 = nblock % n_addresses;
   uint16_t *addresses2 = malloc(DISKIMG_SECTOR_SIZE);
@@ -104,7 +104,7 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
   }
   int block2_err = diskimg_readsector(fd, sector_2, addresses2);
   if(block2_err < 0) {
-    free(addresses2)
+    free(addresses2);
     return -1;
   }
 
