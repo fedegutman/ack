@@ -8,6 +8,10 @@
  * TODO
  */
 int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inp) {
+  if (inumber < 0 || inp == NULL) {
+    return -1;
+  }
+
   inumber = inumber - 1; // la indexacion arranca en 1
   int inodes_per_sector = DISKIMG_SECTOR_SIZE / sizeof(struct inode); // cantidad de inodes por sector
 
@@ -20,6 +24,7 @@ int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inp) {
   struct inode inodes[inodes_per_sector]; // armo una lista para poner todos los inodes
 
   int err = diskimg_readsector(fd, sector_to_read, inodes); // leo el sector
+
   if(err < 0){
     return -1;
   }
@@ -38,6 +43,9 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum
     // 3. el inode apunta a un bloque que apunta a otro bloque que tiene numeros de bloques (doubly indirect blocks)
 
   // caso 1: el archivo es chico por ende el inode apunta directamente a los bloques de datos
+  if (blockNum < 0 || inp == NULL) {
+    return -1; // error
+  }
   int fd = fs->dfd;
 	int adressing = ((inp->i_mode & ILARG) == 0); // chequeo si el inode usa direct addressing CHEQUEAR
 
