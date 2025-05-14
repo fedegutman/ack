@@ -25,7 +25,7 @@ int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inp) {
 
   int err = diskimg_readsector(fd, sector_to_read, inodes); // leo el sector
 
-  if(err < 0){
+  if (err < 0){
     return -1;
   }
   
