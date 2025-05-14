@@ -31,12 +31,12 @@ int directory_findname(struct unixfilesystem *fs, const char *name,
 
   for (int i = 0; i < block_count; i++) { // recorro todos los bloques del directorio
     unsigned char buf[DISKIMG_SECTOR_SIZE];
-    int bytes = file_getblock(fs, dirinumber, i, buf);
-    if (bytes < 0) {
+    int valid_bytes = file_getblock(fs, dirinumber, i, buf);
+    if (valid_bytes < 0) {
       return -1;
     }
 
-    int entries = bytes / sizeof(struct direntv6); // calculo el numero de entradas en el bloque
+    int entries = valid_bytes / sizeof(struct direntv6); // calculo el numero de entradas en el bloque
     struct direntv6 *entry = (struct direntv6 *)buf;
 
     for (int j = 0; j < entries; j++) { // recorro todas las entradas del bloque
